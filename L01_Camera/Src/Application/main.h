@@ -56,6 +56,10 @@ private:
 	
 	// 板ポリゴン
 	std::shared_ptr<KdSquarePolygon> m_spPoly = nullptr;
+	const float humZ =5.0f;
+
+	// 地形モデル
+	std::shared_ptr<KdModelData> m_spModel = nullptr;
 
 //=====================================================
 // シングルトンパターン
