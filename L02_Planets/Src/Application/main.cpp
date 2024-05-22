@@ -1,13 +1,14 @@
 ﻿#include "main.h"
 
-#include "HamuTaro.h"
-#include "Terrain.h"
+#include "Object/Sun/Sun.h"
+#include "Object/Earth/Earth.h"
+#include "Object/Moon/Moon.h"
 
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
 // エントリーポイント
 // アプリケーションはこの関数から進行する
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
-int WINAPI WinMain(_In_ HINSTANCE, _In_opt_  HINSTANCE, _In_ LPSTR, _In_ int)
+int WINAPI WinMain(_In_ HINSTANCE, _In_opt_  HINSTANCE, _In_ LPSTR , _In_ int)
 {
 	// メモリリークを知らせる
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
@@ -67,30 +68,17 @@ void Application::PreUpdate()
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
 void Application::Update()
 {
-	// 全ゲームオブジェクトの更新
-	for (std::shared_ptr<KdGameObject> obj : m_gameObjList)
+	for (std::shared_ptr<KdGameObject> obj : m_objList)
 	{
 		obj->Update();
 	}
 
-	// カメラ行列の更新
-	{
-		Math::Matrix _mScale = Math::Matrix::CreateScale(1);
+	// どこに配置されるか
+	Math::Matrix _mTrans = Math::Matrix::CreateTranslation(0.0f, 0.0f, -20.0f);
 
-		// どれだけ傾けているか
-		Math::Matrix _mRotationX = Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(45));
-
-		static float _yRot = 0.0f;
-		Math::Matrix _mRotationY = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(_yRot));
-		//_yRot += 0.5f;
-
-		// どこに配置されるか
-		Math::Matrix _mTrans = Math::Matrix::CreateTranslation(0.0f, 6.0f, -5.0f);
-
-		// カメラの「ワールド行列」を作成し、適応させる
-		Math::Matrix _worldMat = _mRotationX * _mTrans * _mRotationY;
-		m_spCamera->SetCameraMatrix(_worldMat);
-	}
+	// カメラの「ワールド行列」を作成し、適応させる
+	Math::Matrix _worldMat = _mTrans;
+	m_spCamera->SetCameraMatrix(_worldMat);
 }
 
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
@@ -147,8 +135,7 @@ void Application::Draw()
 	// 陰影のあるオブジェクト(不透明な物体や2Dキャラ)はBeginとEndの間にまとめてDrawする
 	KdShaderManager::Instance().m_StandardShader.BeginLit();
 	{
-		// 全ゲームオブジェクト描画
-		for (std::shared_ptr<KdGameObject> obj : m_gameObjList)
+		for (std::shared_ptr<KdGameObject> obj : m_objList)
 		{
 			obj->DrawLit();
 		}
@@ -257,25 +244,19 @@ bool Application::Init(int w, int h)
 	//===================================================================
 	// カメラ初期化
 	//===================================================================
-	m_spCamera = std::make_shared<KdCamera>();
+	m_spCamera	= std::make_shared<KdCamera>();
 
-	//===================================================================
-	// ハムスター初期化
-	//===================================================================
-	std::shared_ptr<HamuTaro> hamu = std::make_shared<HamuTaro>();
-	hamu->Init();
-	
-	// ★重要★
-	m_gameObjList.push_back(hamu);
+	// 太陽
+	std::shared_ptr<Sun> sun = std::make_shared<Sun>();
+	m_objList.push_back(sun);
 
-	//===================================================================
-	// 地形初期化
-	//===================================================================
-	std::shared_ptr<Terrain> terrain=std::make_shared<Terrain>();
-	terrain->Init();
-	
-	// ★重要★
-	m_gameObjList.push_back(terrain);
+	// 地球
+	std::shared_ptr<Earth> earth = std::make_shared<Earth>();
+	m_objList.push_back(earth);
+
+	// 月
+	std::shared_ptr<Moon> moon = std::make_shared<Moon>();
+	m_objList.push_back(moon);
 
 	return true;
 }
@@ -331,8 +312,8 @@ void Application::Execute()
 
 		if (GetAsyncKeyState(VK_ESCAPE))
 		{
-			//			if (MessageBoxA(m_window.GetWndHandle(), "本当にゲームを終了しますか？",
-			//				"終了確認", MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES)
+//			if (MessageBoxA(m_window.GetWndHandle(), "本当にゲームを終了しますか？",
+//				"終了確認", MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES)
 			{
 				End();
 			}

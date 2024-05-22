@@ -21,6 +21,8 @@ public:
 	int GetNowFPS() const { return m_fpsController.m_nowfps; }
 	int GetMaxFPS() const { return m_fpsController.m_maxFps; }
 
+	std::vector<std::shared_ptr<KdGameObject>> GetObjList() { return m_objList; }
+
 private:
 
 	void KdBeginUpdate();
@@ -51,11 +53,9 @@ private:
 	// ゲーム終了フラグ trueで終了する
 	bool		m_endFlag = false;
 
-	// カメラ
-	std::shared_ptr<KdCamera> m_spCamera = nullptr;
-	
-	// ゲームオブジェクトリスト
-	std::vector<std::shared_ptr<KdGameObject>> m_gameObjList;
+	std::shared_ptr<KdCamera>			m_spCamera		= nullptr;
+
+	std::vector<std::shared_ptr<KdGameObject>> m_objList;
 
 //=====================================================
 // シングルトンパターン
