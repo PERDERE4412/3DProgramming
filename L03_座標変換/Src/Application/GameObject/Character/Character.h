@@ -11,7 +11,25 @@ public:
 	void DrawLit()			override;
 	void DrawSprite()		override;
 
+	void SetCamera(std::shared_ptr<KdCamera> camera)
+	{
+		m_wpCam = camera;
+	}
+
+	void SetTerrain(std::shared_ptr<KdGameObject> terrain)
+	{
+		m_wpTerrain = terrain;
+	}
+
 private:
+	
+	KdTexture m_tex;
+
 	std::shared_ptr<KdSquarePolygon> m_spPoly = nullptr;
 
+	std::weak_ptr<KdCamera> m_wpCam;
+
+	std::weak_ptr<KdGameObject> m_wpTerrain;
+
+	Math::Vector3 m_TargetPos = Math::Vector3::Zero;
 };
